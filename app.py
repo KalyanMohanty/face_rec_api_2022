@@ -6,19 +6,19 @@ import json
 import re
 import pdb
 
-app2 = Flask(__name__)
+app = Flask(__name__)
 
 UPLOAD_FOLDER = 'received_files'
 UPLOAD_FOLDER2 = 'static'
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg']
 
-# app2.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 #############face_util################
 import face_recognition as fr
 
-@app2.route('/image_upload', methods=['GET', 'POST'])
+@app.route('/image_upload', methods=['GET', 'POST'])
 def image_upload():
     # app = Flask(__name__)
     app = Flask(__name__, template_folder='templates')
@@ -43,7 +43,7 @@ def image_upload():
             return redirect('/downloadfile/' + filename)
     return render_template('image_upload.html')
 
-@app2.route("/downloadfile/<filename>", methods=['GET'])
+@app.route("/downloadfile/<filename>", methods=['GET'])
 def download_file(filename):
     return render_template('download.html', value=filename)
 
@@ -160,7 +160,7 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app2.route('/face_match', methods=['POST', 'GET'])
+@app.route('/face_match', methods=['POST', 'GET'])
 def face_match():
     if request.method == 'POST':
         # check if the post request has the file part
@@ -206,7 +206,7 @@ def print_request(request):
     body_sub_image_data=re.sub(b'(\r\n\r\n)(.*?)(\r\n--)',br'\1<image raw data>\3', body_bytes,flags=re.DOTALL)
     print(body_sub_image_data.decode('utf-8'))
 
-@app2.route('/face_rec', methods=['POST', 'GET'])
+@app.route('/face_rec', methods=['POST', 'GET'])
 def face_recognition():
     if request.method == 'POST':
         # Print request url, headers and content
@@ -231,7 +231,7 @@ def face_recognition():
             param_features = request.args.get('facial_features', '')
             if param_features.lower() == 'true':
                 facial_features = find_facial_features(file)
-                # app2end facial_features to resp_data
+                # append facial_features to resp_data
                 resp_data.update({'facial_features': facial_features})
 
             # face_locations parameter:
@@ -252,17 +252,17 @@ def face_recognition():
     </form>
     '''
 
-@app2.route('/')
+@app.route('/')
 def hello_world():
     return 'Face Recognition API'
 
 # Run in HTTP
 # When debug = True, code is reloaded on the fly while saved
 if __name__=='__main__':
-    app2.run(debug=True)
+    app.run(debug=True)
 
 # Run in HTTPS
 # https://werkzeug.palletsprojects.com/en/0.15.x/serving/#quickstart
 # ssl_context_ = ('ssl_keys/key.crt', 'ssl_keys/key.key')
-# app2.run(host='127.0.0.1', port='5000', ssl_context=ssl_context_)
+# app.run(host='127.0.0.1', port='5000', ssl_context=ssl_context_)
 # output: Running on https://127.0.0.1:5001/
